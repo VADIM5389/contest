@@ -3,40 +3,40 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Конкурс')</title>
+    <title>@yield('title', 'Платформа конкурса')</title>
 
-    {{-- Bootstrap CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    {{-- Твой файл стилей --}}
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
-<body class="bg-light">
+<body class="bg-body-tertiary">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
   <div class="container">
-    <a class="navbar-brand" href="{{ route('home') }}">Конкурс</a>
 
-    <div class="collapse navbar-collapse show">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="topNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="{{ route('home') }}">Главная</a>
+          <a class="nav-link @if(request()->routeIs('home')) active @endif" href="{{ route('home') }}">Главная</a>
         </li>
 
         @auth
           <li class="nav-item">
-            <a class="nav-link" href="{{ route('submissions.index') }}">Подачи</a>
+            <a class="nav-link @if(request()->routeIs('submissions.*')) active @endif" href="{{ route('submissions.index') }}">Мои подачи</a>
           </li>
 
           @if(auth()->user()->role === 'jury' || auth()->user()->role === 'admin')
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('jury.index') }}">Жюри</a>
+              <a class="nav-link @if(request()->routeIs('jury.*')) active @endif" href="{{ route('jury.index') }}">Жюри</a>
             </li>
           @endif
 
           @if(auth()->user()->role === 'admin')
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('admin.index') }}">Админ</a>
+              <a class="nav-link @if(request()->routeIs('admin.*')) active @endif" href="{{ route('admin.index') }}">Админ</a>
             </li>
           @endif
         @endauth
@@ -44,32 +44,36 @@
 
       <div class="d-flex align-items-center gap-2">
         @auth
-          <span class="text-white-50 small me-2">
-            Роль: <b class="text-white">{{ auth()->user()->role }}</b>
+          <span class="text-muted small d-none d-lg-inline">
+            {{ auth()->user()->email }}
+          </span>
+
+          <span class="badge text-bg-light border d-none d-lg-inline">
+            {{ auth()->user()->role }}
           </span>
 
           <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button class="btn btn-outline-light btn-sm" type="submit">Выход</button>
+            <button class="btn btn-outline-secondary btn-sm" type="submit">Выход</button>
           </form>
         @endauth
 
         @guest
-          <a class="btn btn-outline-light btn-sm" href="{{ route('login') }}">Вход</a>
-          <a class="btn btn-warning btn-sm" href="{{ route('register') }}">Регистрация</a>
+          <a class="btn btn-outline-secondary btn-sm" href="{{ route('login') }}">Вход</a>
+          <a class="btn btn-primary btn-sm" href="{{ route('register') }}">Регистрация</a>
         @endguest
       </div>
     </div>
   </div>
 </nav>
 
-<main class="container py-4" style="min-height:70vh;">
+<main class="container py-4">
     @if(session('ok'))
-        <div class="alert alert-success">{{ session('ok') }}</div>
+        <div class="alert alert-success border-0 shadow-sm">{{ session('ok') }}</div>
     @endif
 
     @if($errors->any())
-        <div class="alert alert-danger">
+        <div class="alert alert-danger border-0 shadow-sm">
             <ul class="mb-0">
                 @foreach($errors->all() as $e)
                     <li>{{ $e }}</li>
@@ -81,9 +85,10 @@
     @yield('main')
 </main>
 
-<footer class="border-top py-3 bg-white">
-  <div class="container text-muted small">
-    © {{ date('Y') }} Платформа конкурса
+<footer class="border-top bg-white">
+  <div class="container py-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+    <div class="text-muted small">© {{ date('Y') }} Платформа конкурса</div>
+    <div class="text-muted small">Laravel</div>
   </div>
 </footer>
 
